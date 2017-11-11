@@ -1,4 +1,4 @@
-## AlgoGenetique Image : https://travis-ci.org/desfreng/AlgoGenetique.svg?branch=master
+## AlgoGenetique [![Build Status](https://travis-ci.org/desfreng/AlgoGenetique.svg?branch=master)](https://travis-ci.org/desfreng/AlgoGenetique)
 
 Sample implementation of a genetic algorithm.
 
