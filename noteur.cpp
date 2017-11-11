@@ -110,7 +110,7 @@ note Noteur::operator() (Individu *individu)
      * Sinon, on ajoute à la note le nombre de nombres idebtiques multiplié par le même coeficiant (m_coef)
      */
     
-    decltype (individu->getPatrimoine()) doubles;
+    std::vector<gene> doubles;
     
     for (auto allele : individu->getPatrimoine()) {
     

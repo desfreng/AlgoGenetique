@@ -11,7 +11,6 @@
 #include "individu.h"
 #include "general.h"
 #include "abstractnoteur.h"
-#include "simplexeption.h"
 
 /* Classe qui s'occupe de la gestion des individus.
  * Elle permet de réaliser des générations avec les fonctions :
