@@ -8,7 +8,7 @@ Noteur::Noteur (const Noteur& noteur) : AbstractNoteur (), m_resultat (noteur.m_
 
 Noteur::~Noteur() {}
 
-note Noteur::operator() (UIndividu *individu)
+note Noteur::operator() (Individu *individu)
 {
     if (m_debug) {
         cout << endl << "---------------------------------------------" << endl;
@@ -145,7 +145,7 @@ void Noteur::resetSommeNotes()
     m_sommeNotes = 0;
 }
 
-double Noteur::resultat (const UIndividu *individu)
+double Noteur::resultat (const Individu *individu)
 {
     if (m_debug) {
         cout << "Parenthèse 1 = " << parenthese1 (individu) << endl;
@@ -159,11 +159,11 @@ double Noteur::resultat (const UIndividu *individu)
     return static_cast<double> (individu->getAllele (0)) + parenthese1 (individu) + static_cast<double> (individu->getAllele (3)) + \
            (12.0 * static_cast<double> (individu->getAllele (4))) - static_cast<double> (individu->getAllele (5)) - 11.0 + parenthese3 (individu) - 10.0;
 }
-double Noteur::parenthese1 (const UIndividu *individu)
+double Noteur::parenthese1 (const Individu *individu)
 {
     return (13.0 * static_cast<double> (individu->getAllele (1)) / static_cast<double> (individu->getAllele (2)));
 }
-double Noteur::parenthese3 (const UIndividu *individu)
+double Noteur::parenthese3 (const Individu *individu)
 {
     return (static_cast<double> (individu->getAllele (6)) * static_cast<double> (individu->getAllele (7)) / static_cast<double> (individu->getAllele (8)));
 }

@@ -15,16 +15,16 @@ class Noteur : public AbstractNoteur
         
         ~Noteur();
         
-        note operator() (UIndividu *individu);
+        note operator() (Individu *individu);
         
         note getSommeNotes() const;
         void resetSommeNotes();
         
     private :
     
-        double resultat (const UIndividu *individu);
-        double parenthese1 (const UIndividu *individu);
-        double parenthese3 (const UIndividu  *individu);
+        double resultat (const Individu *individu);
+        double parenthese1 (const Individu *individu);
+        double parenthese3 (const Individu  *individu);
         
         double m_resultat;
         int m_coef;

@@ -2,6 +2,6 @@
 #define GENERAL_H
 
 typedef unsigned int gene;
-typedef unsigned int note;
+typedef int note;
 
 #endif // GENERAL_H

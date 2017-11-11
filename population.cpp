@@ -1,25 +1,20 @@
 #include "population.h"
 
-
-
-
 Population::Population (size_t size, double fracSupr, double fracMut, note objectif) :  m_objectif (objectif), m_popSize (size), m_fracSupr (fracSupr), m_fracMut (fracMut) {}
-
 Population::~Population()
 {
-    for (UIndividu *a : m_pop) {
+    for (Individu *a : m_pop) {
         delete a;
         a = 0;
     }
 }
-
 
 void Population::generate (const std::vector<gene>& genes, unsigned int nbgenes)
 {
     m_pop.clear();
     
     for (size_t i = 0; i < m_popSize; ++i) {
-        m_pop.push_back (new UIndividu (genes, nbgenes));
+        m_pop.push_back (new Individu (genes, nbgenes));
     }
     
 }
@@ -28,7 +23,7 @@ void Population::generate (const std::vector<gene>& genes, bool ramdom)
     m_pop.clear();
     
     for (size_t i = 0; i < m_popSize; ++i) {
-        m_pop.push_back (new UIndividu (genes, ramdom));
+        m_pop.push_back (new Individu (genes, ramdom));
     }
 }
 
@@ -47,11 +42,10 @@ void Population::doGenerationCycle (AbstractNoteur& comp, size_t nbSolutions)
         ++i;
     }
 }
-
 void Population::doGenerations (unsigned int nbGeneration, AbstractNoteur& comp)
 {
 
-    for (unsigned int i; i < nbGeneration; ++i) {
+    for (unsigned int i = 0; i < nbGeneration; ++i) {
         std::cout << "Generation n° " << i + 1 << std::endl;
         select();
         noteAll (comp);
@@ -93,11 +87,11 @@ Population::it Population::end()
     return m_pop.end();
 }
 
-const std::vector<Individu<gene>> Population::getSolutions() const
+const std::vector<Individu> Population::getSolutions() const
 {
     return m_solutions;
 }
-const std::vector<Individu<gene> *> Population::getPopulation() const
+const std::vector<Individu *> Population::getPopulation() const
 {
     return m_pop;
 }
@@ -162,7 +156,7 @@ void Population::mating ()
         pat.insert (pat.begin(), pat2.begin(), pat2.end());
         pat.insert (pat.begin(), pat1.begin(), pat1.end());
         
-        m_pop.push_back (new UIndividu (pat, false));
+        m_pop.push_back (new Individu (pat, false));
     }
 }
 void Population::mutation()
@@ -192,10 +186,10 @@ void Population::mutation()
 
 std::ostream& operator<< (std::ostream& os, const Population& pop)
 {
-    std::multimap<gene, Individu<gene> *> map;
+    std::multimap<gene, Individu *> map;
     
-    for (UIndividu *a : pop.getPopulation()) {
-        map.insert (std::pair<gene, Individu<gene> *> (a->getNote(), a));
+    for (Individu *a : pop.getPopulation()) {
+        map.insert (std::pair<gene, Individu *> (a->getNote(), a));
     }
     
     for (auto a : map) {
