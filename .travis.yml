@@ -9,4 +9,6 @@ before_install:
 script:
  - qmake -project
  - qmake AlgoGenetique.pro
+ - ls
+ - cat Makefile
  - make
