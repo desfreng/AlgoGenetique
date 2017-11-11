@@ -12,8 +12,8 @@ class AbstractNoteur
         
         virtual note operator() (Individu *individu) = 0;
         
-        virtual note getSommeNotes() const = 0;
-        virtual void resetSommeNotes() = 0;
+        virtual note getSommeNotes() const;
+        virtual void resetSommeNotes();
         
     protected:
         note m_sommeNotes;

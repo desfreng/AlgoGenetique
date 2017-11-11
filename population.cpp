@@ -1,6 +1,6 @@
 #include "population.h"
 
-Population::Population (size_t size, double fracSupr, double fracMut, note objectif) :  m_objectif (objectif), m_popSize (size), m_fracSupr (fracSupr), m_fracMut (fracMut) {}
+Population::Population (size_t size, double fracSupr, double fracMut, note objectif) : isNoted (false),  m_objectif (objectif), m_popSize (size), m_fracSupr (fracSupr), m_fracMut (fracMut) {}
 Population::~Population()
 {
     for (Individu *a : m_pop) {
@@ -17,6 +17,7 @@ void Population::generate (const std::vector<gene>& genes, unsigned int nbgenes)
         m_pop.push_back (new Individu (genes, nbgenes));
     }
     
+    isNoted = false;
 }
 void Population::generate (const std::vector<gene>& genes, bool ramdom)
 {
@@ -25,6 +26,9 @@ void Population::generate (const std::vector<gene>& genes, bool ramdom)
     for (size_t i = 0; i < m_popSize; ++i) {
         m_pop.push_back (new Individu (genes, ramdom));
     }
+    
+    isNoted = false;
+    
 }
 
 void Population::doGenerationCycle (AbstractNoteur& comp, size_t nbSolutions)
@@ -58,6 +62,7 @@ void Population::doGenerations (unsigned int nbGeneration, AbstractNoteur& comp)
 
 void Population::noteAll (AbstractNoteur& comp)
 {
+
     comp.resetSommeNotes();
     
     for (auto a : m_pop) {
@@ -70,6 +75,7 @@ void Population::noteAll (AbstractNoteur& comp)
         }
     }
     
+    isNoted = true;
     m_sommeNotes = comp.getSommeNotes();
 }
 
@@ -98,6 +104,7 @@ const std::vector<Individu *> Population::getPopulation() const
 
 void Population::select()
 {
+
     std::random_device rd;
     unsigned int sommeNotesTemp = 0;
     
@@ -115,6 +122,7 @@ void Population::select()
         
             if (n < sommeNotesTemp +  (*it)->getNote() && sommeNotesTemp <= n) {
                 range -= (*it)->getNote();
+                delete *it;
                 m_pop.erase (it);
                 sommeNotesTemp = 0;
                 break;
