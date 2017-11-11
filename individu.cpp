@@ -51,10 +51,10 @@ void Individu::swapAlleles (size_t index1, size_t index2)
     resetNote();
 }
 
-//void Individu::apply (AbstractNoteur& fonction)
-//{
-//    m_note = fonction (this);
-//}
+bool Individu::haveNote() const
+{
+    return m_note != 0;
+}
 
 note Individu::getNote() const
 {
@@ -67,7 +67,7 @@ void Individu::setNote (note value)
 
 void Individu::resetNote()
 {
-    m_note = -1;
+    m_note = 0;
 }
 
 std::ostream& operator<< (std::ostream& os, const Individu& individu)
@@ -83,7 +83,7 @@ std::ostream& operator<< (std::ostream& os, const Individu& individu)
         }
     }
     
-    if (individu.getNote() != -1) {
+    if (individu.haveNote()) {
         os << " -> " << individu.getNote();
     }
     else {

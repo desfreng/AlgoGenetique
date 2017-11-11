@@ -8,7 +8,6 @@
 #include <algorithm>
 
 #include "general.h"
-//#include "abstractnoteur.h"
 
 class Individu
 {
@@ -23,7 +22,7 @@ class Individu
         
         void swapAlleles (size_t index1, size_t index2);
         
-        //void apply (AbstractNoteur& fonction);
+        bool haveNote() const;
         
         note getNote() const;
         void setNote (note value);

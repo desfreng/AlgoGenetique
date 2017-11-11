@@ -68,17 +68,9 @@ note Noteur::operator() (Individu *individu)
                 }
             }
             
-            if (nbAllele != 1) {
-//                if (nbAllele == 0) {
-//                    laNote += static_cast<double> (m_coef);
-//                }
-//                else {
-                if (nbAllele == 0) {
-                    std::cerr << "Division par 0 à la ligne : " << __LINE__ << std::endl;
-                }
-                
+            if (nbAllele > 1) {
+            
                 laNote += static_cast<double> (m_coef) / static_cast<double> (nbAllele);
-//                }
             }
         }
     }
@@ -94,18 +86,9 @@ note Noteur::operator() (Individu *individu)
                 }
             }
             
-            if (nbAllele != 1) {
-//                if (nbAllele == 0) {
-//                    laNote += static_cast<double> (m_coef);
-//                }
-//                else {
-                if (nbAllele == 0) {
-                    std::cerr << "Division par 0 à la ligne : " << __LINE__ << std::endl;
-                }
-                
+            if (nbAllele > 1) {
                 laNote += static_cast<double> (m_coef) / static_cast<double> (nbAllele);
-//                }
-
+                
                 if (find (doubles.begin(), doubles.end(), allele) == doubles.end()) {
                     doubles.push_back (allele);
                     cout << "Allèle " << allele << " trouvé " << nbAllele << " fois dans le patrimoine" << endl;
@@ -134,15 +117,6 @@ note Noteur::operator() (Individu *individu)
     m_sommeNotes += static_cast<note> (ceil (laNote));
     
     return static_cast<note> (ceil (laNote));
-}
-
-note Noteur::getSommeNotes() const
-{
-    return m_sommeNotes;
-}
-void Noteur::resetSommeNotes()
-{
-    m_sommeNotes = 0;
 }
 
 double Noteur::resultat (const Individu *individu)

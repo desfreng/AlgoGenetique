@@ -15,4 +15,5 @@ HEADERS += \
     population.h \
     noteur.h \
     general.h \
-    abstractnoteur.h
+    abstractnoteur.h \
+    simplexeption.h

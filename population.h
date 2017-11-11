@@ -11,6 +11,7 @@
 #include "individu.h"
 #include "general.h"
 #include "abstractnoteur.h"
+#include "simplexeption.h"
 
 class Population
 {
@@ -18,7 +19,7 @@ class Population
     public:
         typedef typename std::vector<Individu *>::iterator it;
         
-        Population (size_t size, double fracSupr, double fracMut, note objectif = 1);
+        Population (size_t size, double fracSupr, double fracMut, note objectif = 1, bool tirageUniforme = false);
         ~Population();
         
         void select();
@@ -30,7 +31,7 @@ class Population
         
         void doGenerationCycle (AbstractNoteur& comp, size_t nbSolutions);
         void doGenerations (unsigned int nbGeneration, AbstractNoteur& comp);
-        void noteAll (AbstractNoteur& comp);
+        void noteAll (AbstractNoteur& noteur);
         
         size_t size() const;
         
@@ -41,13 +42,20 @@ class Population
         const std::vector<Individu *> getPopulation() const;
         
     private:
-        note m_sommeNotes;
+    
+        it selectRandomIndividu ();
         
+        unsigned int m_sommeNotes;
+        unsigned int m_nbGeneration;
         
+        bool m_isNoted;
+        
+        bool m_tirageUniforme;
         note m_objectif;
         size_t m_popSize;
         double m_fracSupr;
         double m_fracMut;
+        
         std::vector<Individu *> m_pop;
         std::vector<Individu> m_solutions;
 };

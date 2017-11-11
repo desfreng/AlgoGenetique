@@ -17,9 +17,6 @@ class Noteur : public AbstractNoteur
         
         note operator() (Individu *individu);
         
-        note getSommeNotes() const;
-        void resetSommeNotes();
-        
     private :
     
         double resultat (const Individu *individu);
