@@ -4,6 +4,10 @@
 #include <exception>
 #include <string>
 
+/* Classe simple pour gérer les exeptions
+ * Hérite de std::exception
+ */
+
 class SimplExeption : std::exception
 {
     public:
@@ -14,6 +18,9 @@ class SimplExeption : std::exception
             m_message = phrase;
             m_cause = cause;
         }
+        ~SimplExeption () {
+            m_message.clear();
+        }
         
         const char *what() const noexcept {
             return m_message.c_str();
@@ -23,9 +30,6 @@ class SimplExeption : std::exception
             return m_cause;
         }
         
-        ~SimplExeption () {
-            m_message.clear();
-        }
         
     private:
         Cause m_cause;

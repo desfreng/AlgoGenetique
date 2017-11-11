@@ -110,7 +110,7 @@ int main()
     
     pop.doGenerationCycle (foncteur, nbReponses);
     
-    for (auto a : pop.getSolutions()) {
+    for (auto a : pop.solutions()) {
         cout << a << endl;
     }
     

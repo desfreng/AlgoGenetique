@@ -1,143 +1,144 @@
 #include <noteur.h>
+#include <fstream>
 
-using namespace std;
+//Constructeurs
+Noteur::Noteur()
+{
+    m_resultat = 66;
+    m_coef = 2;
+    m_debug  = false;
+    m_os = &std::cout;
+}
+Noteur::Noteur (double resultat, unsigned int coeficiant, bool debug)
+{
+    m_resultat = resultat;
+    m_coef = coeficiant;
+    m_debug  = debug;
+    m_os = &std::cout;
+}
 
-Noteur::Noteur() : AbstractNoteur (), m_resultat (66), m_coef (2), m_debug (false) {}
-Noteur::Noteur (double resultat, int coeficiant, bool debug) : AbstractNoteur (), m_resultat (resultat), m_coef (coeficiant), m_debug (debug) {}
-Noteur::Noteur (const Noteur& noteur) : AbstractNoteur (), m_resultat (noteur.m_resultat), m_coef (noteur.m_coef), m_debug (noteur.m_debug) {}
+//Destructeur
+Noteur::~Noteur()
+{
+    m_os = nullptr;
+}
 
-Noteur::~Noteur() {}
+//Met à jour le flux utilisé pour la debug
+void Noteur::setOstream (std::ostream& os)
+{
+    if (m_debug) {
+        m_os = &os;
+    }
+}
 
+//Surcharge de ()
 note Noteur::operator() (Individu *individu)
 {
-    if (m_debug) {
-        cout << endl << "---------------------------------------------" << endl;
-        cout << "Individu : " << *individu << endl;
-    }
-    
-    double laNote = 0;
-    double resul = resultat (individu);
-    double par1 = parenthese1 (individu);
-    double par3 = parenthese3 (individu);
-    
-    
-    if (resul > m_resultat) {
-        laNote = resul - m_resultat;
-    }
-    else {
-        laNote = m_resultat - resul;
-    }
-    
-    if (m_debug) {
-        cout << "Donc Note = " << laNote << endl << endl;
+    //Partie de Debug (instancier Noteur avec debug = true pour voir)
+    if (m_debug && (m_os != nullptr)) {
+        *m_os << std::endl << "---------------------------------------------" << std::endl;
+        *m_os << "Individu : " << *individu << std::endl << std::endl;
     }
     
     
     
-    double fracPar1 = par1 - floor (par1);
     
-    if (m_debug) {
-        cout << par1 << " = " << floor (par1) << " (U) + " << fracPar1 << " (D)" << endl;
+    /*          PREMIÈRE PARTIE
+     *
+     * Vérification du résultat du Serpent
+     * Plus le résultat est près du résultat attendu, plus la note est basse
+     */
+    
+    //Note de l'individu passé en paramètre
+    double laNote = 1;      // Initialisation à 1 pour éviter que la note soit nulle car sinon Individu::haveNote() est faux
+    
+    
+    // Calcul de la 'Première Parenthèse'
+    double par1 = 13.0 * static_cast<double> (individu->getAllele (1)) / static_cast<double> (individu->getAllele (2));
+    
+    // Calcul de la 'Troisième Parenthèse'
+    double par3 = static_cast<double> (individu->getAllele (6)) * static_cast<double> (individu->getAllele (7)) / static_cast<double> (individu->getAllele (8));
+    
+    // Calcul du 'Sepent'
+    double resul = static_cast<double> (individu->getAllele (0)) + par1 + static_cast<double> (individu->getAllele (3)) +
+                   (12.0 * static_cast<double> (individu->getAllele (4))) - static_cast<double> (individu->getAllele (5)) - 11.0 + par3 - 10.0;
+                   
+    laNote = std::abs (resul - m_resultat);
+    
+    //Partie de Debug (instancier Noteur avec debug = true pour voir)
+    if (m_debug && (m_os != nullptr)) {
+        *m_os << "Parenthèse 1 = " << par1 << std::endl;
+        *m_os << "Parenthèse 2 = " << (12.0 * individu->getAllele (4)) << std::endl;
+        *m_os << "Parenthèse 3 = " << par3 << std::endl;
+        *m_os << "Résultat = " << resul << std::endl;
+        *m_os << "Donc Note = " << laNote << std::endl << std::endl;
     }
     
+    
+    
+    
+    /*          DEUXIÈME PARTIE
+     *
+     * Si le résulat n'est pas un entier
+     * On ajoute à la note la partie décimale multipliée par un coeficiant (m_coef)
+     */
+    
+    //Partie décimale de chaque 'parenthèses'
+    double fracPar1 = par1 - floor (par1);      //Résultat avec décimales - Résultat tronqué à l'unité = Partie Décimale
     double fracPar3 = par3 - floor (par3);
     
-    if (m_debug) {
-        cout << par3 << " = " << floor (par3) << " (U) + " << fracPar3 << " (D)" << endl;
-        cout << fracPar1 << " + " << fracPar3 << " = " << fracPar1 + fracPar3 << endl << endl;
-    }
-    
+    //Partie décimale de somme des 'parenthèses'
     double reste =  (fracPar1 + fracPar3) - floor (fracPar1 + fracPar3);
     
-    if (reste != 0.0) {
-        laNote += reste * m_coef;
+    laNote += reste * m_coef;
+    
+    //Partie de Debug (instancier Noteur avec debug = true pour voir)
+    if (m_debug && (m_os != nullptr)) {
+        *m_os << par1 << " = " << floor (par1) << " (U) + " << fracPar1 << " (D)" << std::endl;
+        *m_os << par3 << " = " << floor (par3) << " (U) + " << fracPar3 << " (D)" << std::endl;
+        *m_os << fracPar1 << " + " << fracPar3 << " = " << fracPar1 + fracPar3 << std::endl << std::endl;
+        *m_os << "Donc Note = " << laNote << std::endl << std::endl;
     }
     
-    if (m_debug) {
-        cout << "Donc Note = " << laNote << endl << endl;
-    }
     
     
-    if (!m_debug) {
-        for (auto allele : individu->getPatrimoine()) {
-            int nbAllele = 0;
-            
-            for (auto compare : individu->getPatrimoine()) {
-                if (compare == allele) {
-                    ++nbAllele;
-                }
-            }
-            
-            if (nbAllele > 1) {
-            
-                laNote += static_cast<double> (m_coef) / static_cast<double> (nbAllele);
+    
+    
+    /*          TROISIÈME PARTIE
+     *
+     * On vérifie que le patrimoine de l'individu contient bien que des nombres différents
+     * Sinon, on ajoute à la note le nombre de nombres idebtiques multiplié par le même coeficiant (m_coef)
+     */
+    
+    decltype (individu->getPatrimoine()) doubles;
+    
+    for (auto allele : individu->getPatrimoine()) {
+    
+        //Je compte ne nombre de chaque allèle dans le patrimoine si elle n'est déja pas compté
+        
+        if (std::find (doubles.begin(), doubles.end(), allele) == doubles.end()) {
+            if (std::count (individu->getPatrimoine().begin(), individu->getPatrimoine().end(), allele) > 1) {
+                doubles.push_back (allele);
             }
         }
     }
-    else {
-        decltype (individu->getPatrimoine()) doubles;
-        
-        for (auto allele : individu->getPatrimoine()) {
-            int nbAllele = 0;
-            
-            for (auto compare : individu->getPatrimoine()) {
-                if (compare == allele) {
-                    ++nbAllele;
-                }
-            }
-            
-            if (nbAllele > 1) {
-                laNote += static_cast<double> (m_coef) / static_cast<double> (nbAllele);
-                
-                if (find (doubles.begin(), doubles.end(), allele) == doubles.end()) {
-                    doubles.push_back (allele);
-                    cout << "Allèle " << allele << " trouvé " << nbAllele << " fois dans le patrimoine" << endl;
-                }
-            }
+    
+    laNote += doubles.size() * m_coef;
+    
+    //Partie de Debug (instancier Noteur avec debug = true pour voir)
+    if (m_debug && (m_os != nullptr)) {
+        for (auto a : doubles) {
+            *m_os << "Allèle " << a << " trouvé plusieurs fois dans le patrimoine" << std::endl;
         }
         
-        cout << "Donc Note = " << laNote << " (" << laNote - doubles.size() << " + " << doubles.size() << ")" << endl << endl;;
-    }
-    
-    
-    ++laNote;
-    
-    if (m_debug) {
-        cout << "Note Finale : " << static_cast<int> (ceil (laNote)) << endl << endl;
-    }
-    
-    individu->setNote (static_cast<note> (ceil (laNote)));
-    
-    if (m_debug) {
-        cout << *individu << endl;
-        cout << "---------------------------------------------" << endl << endl;
+        *m_os << "Donc Note = " << laNote << " (" << laNote - doubles.size() << " + " << doubles.size() << ")" << std::endl << std::endl;
+        
+        *m_os << "Note Finale : " << static_cast<int> (ceil (laNote)) << std::endl;
+        *m_os << "---------------------------------------------" << std::endl << std::endl;
         
     }
     
+    // On retourne la note
     m_sommeNotes += static_cast<note> (ceil (laNote));
-    
     return static_cast<note> (ceil (laNote));
-}
-
-double Noteur::resultat (const Individu *individu)
-{
-    if (m_debug) {
-        cout << "Parenthèse 1 = " << parenthese1 (individu) << endl;
-        cout << "Parenthèse 2 = " << (12.0 * individu->getAllele (4)) << endl;
-        cout << "Parenthèse 3 = " << parenthese3 (individu) << endl;
-        cout << "Résultat = " << static_cast<double> (individu->getAllele (0)) + parenthese1 (individu) + static_cast<double> (individu->getAllele (3)) + \
-             (12.0 * static_cast<double> (individu->getAllele (4))) - static_cast<double> (individu->getAllele (5)) - 11.0 + parenthese3 (individu) - 10.0 << endl;
-        cout << endl;
-    }
-    
-    return static_cast<double> (individu->getAllele (0)) + parenthese1 (individu) + static_cast<double> (individu->getAllele (3)) + \
-           (12.0 * static_cast<double> (individu->getAllele (4))) - static_cast<double> (individu->getAllele (5)) - 11.0 + parenthese3 (individu) - 10.0;
-}
-double Noteur::parenthese1 (const Individu *individu)
-{
-    return (13.0 * static_cast<double> (individu->getAllele (1)) / static_cast<double> (individu->getAllele (2)));
-}
-double Noteur::parenthese3 (const Individu *individu)
-{
-    return (static_cast<double> (individu->getAllele (6)) * static_cast<double> (individu->getAllele (7)) / static_cast<double> (individu->getAllele (8)));
 }

@@ -1,6 +1,6 @@
 #include "population.h"
 
-Population::Population (size_t size, double fracSupr, double fracMut, note objectif, bool tirageUniforme) : m_nbGeneration (0), m_isNoted (false), m_tirageUniforme (tirageUniforme),  m_objectif (objectif), m_popSize (size), m_fracSupr (fracSupr), m_fracMut (fracMut) {}
+Population::Population (size_t size, double fracSupr, double fracMut, note objectif, bool tirageUniforme) :  m_isNoted (false), m_nbGeneration (0), m_tirageUniforme (tirageUniforme),  m_objectif (objectif), m_popSize (size), m_fracSupr (fracSupr), m_fracMut (fracMut) {}
 Population::~Population()
 {
     // Je suprime tous mes individus
@@ -180,17 +180,22 @@ Population::it Population::end()
     return m_pop.end();
 }
 
-bool Population::tirageUniforme() const
+bool Population::uniformRandomDraw() const
 {
     return m_tirageUniforme;
 }
 
-const std::vector<Individu> Population::getSolutions() const
+unsigned int Population::generation() const
+{
+    return m_nbGeneration;
+}
+
+const std::vector<Individu> Population::solutions() const
 {
     return m_solutions;
 }
 
-const std::vector<Individu *> Population::getPopulation() const
+const std::vector<Individu *> Population::population() const
 {
     return m_pop;
 }
@@ -253,7 +258,7 @@ std::ostream& operator<< (std::ostream& os, const Population& pop)
     
     // Je trie mes individus avec une multimap par note (de la note la plus faible à la plus élevée)
     
-    for (Individu *a : pop.getPopulation()) {
+    for (Individu *a : pop.population()) {
         map.insert (std::pair<gene, Individu *> (a->getNote(), a));
     }
     

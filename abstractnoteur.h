@@ -4,16 +4,21 @@
 #include "individu.h"
 #include "general.h"
 
+//Le Foncteur utilisé pour noter les individus doit hériter de la classe abstraite AbstractNoteur
 class AbstractNoteur
 {
     public:
-        AbstractNoteur();
-        virtual ~AbstractNoteur();
+        AbstractNoteur() : m_sommeNotes (0) {}
+        virtual ~AbstractNoteur() {}
         
         virtual note operator() (Individu *individu) = 0;
         
-        virtual note getSommeNotes() const;
-        virtual void resetSommeNotes();
+        note getSommeNotes() const {
+            return m_sommeNotes;
+        }
+        void resetSommeNotes() {
+            m_sommeNotes = 0;
+        }
         
     protected:
         note m_sommeNotes;

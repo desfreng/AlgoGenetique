@@ -59,13 +59,15 @@ class Population
         it end();
         
         // Renvoi un boléen utilisé lors du tirage (Uniforme ou non)
-        bool tirageUniforme() const;
+        bool uniformRandomDraw() const;
+        
+        unsigned int generation() const;
         
         // Renvoi les solutions trouvés
-        const std::vector<Individu> getSolutions() const;
+        const std::vector<Individu> solutions() const;
         
         // Renvoi la population
-        const std::vector<Individu *> getPopulation() const;
+        const std::vector<Individu *> population() const;
         
     private:
     
@@ -74,18 +76,18 @@ class Population
          * Sinon c'est une séléction aléatoire réalisé à partir des notes.
          * Plus l'individu à une note élevé plus il a une probabilité inportante d'être sélectioné (pour un croisement, une mutation, une supression)
          */
-        it selectRandomIndividu ();
+        it selectRandomIndividu();
         
         unsigned int m_sommeNotes;
-        unsigned int m_nbGeneration;
         
         bool m_isNoted;
         
-        bool m_tirageUniforme;  //
-        note m_objectif;        //
-        size_t m_popSize;       // Paramètres de la classe
-        double m_fracSupr;      //
-        double m_fracMut;       //
+        unsigned int m_nbGeneration;    //
+        bool m_tirageUniforme;          //
+        note m_objectif;                //
+        size_t m_popSize;               // Paramètres de la classe
+        double m_fracSupr;              //
+        double m_fracMut;               //
         
         std::vector<Individu *> m_pop;      // Conteneur des Individus
         

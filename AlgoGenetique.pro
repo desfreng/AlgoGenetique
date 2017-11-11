@@ -6,7 +6,6 @@ CONFIG -= qt
 SOURCES += main.cpp \
     noteur.cpp \
     population.cpp \
-    abstractnoteur.cpp \
     individu.cpp
 
 HEADERS += \

@@ -6,26 +6,31 @@
 
 #include "abstractnoteur.h"
 
+// Foncteur qui note les individus.
+// Il hérite de AbstractNoteur
+
 class Noteur : public AbstractNoteur
 {
     public:
+        //Constructeurs
         Noteur();
-        Noteur (double resultat, int coeficiant = 1, bool debug = false);
-        Noteur (const Noteur& noteur);
+        Noteur (double resultat, unsigned int coeficiant = 1, bool debug = false);
         
+        //Destructeur
         ~Noteur();
         
+        //Met à jour le flux utilisé pour la debug
+        void setOstream (std::ostream& os);
+        
+        //surcharge de "l'operateur ()", qui note l'individu passé en paramètre.
         note operator() (Individu *individu);
         
     private :
     
-        double resultat (const Individu *individu);
-        double parenthese1 (const Individu *individu);
-        double parenthese3 (const Individu  *individu);
-        
-        double m_resultat;
-        int m_coef;
-        bool m_debug;
+        double m_resultat;      //
+        unsigned int m_coef;    // Paramètres Constant de la Classe
+        bool m_debug;           //
+        std::ostream *m_os;     //
 };
 
 #endif // NOTEINDIVIDU_H
