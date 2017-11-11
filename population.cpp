@@ -16,7 +16,7 @@ void Population::generate (const std::vector<gene>& genes, unsigned int nbgenes)
     m_pop.clear();
     
     // Je remplis ma population avec des nouveaux individus
-    // qui ont un patrimoine mélangé sans doubles
+    // qui ont un patrimoine mélangé avec doubles
     
     for (size_t i = 0; i < m_popSize; ++i) {
         m_pop.push_back (new Individu (genes, nbgenes));
@@ -29,8 +29,8 @@ void Population::generate (const std::vector<gene>& genes, bool ramdom)
     m_pop.clear();
     
     // Je remplis ma population avec des nouveaux individus
-    // qui ont un patrimoine mélangé avec doubles (si ramdom = true)
-    // sinon je créé une population d'individus indentiques (pour ramdom = false)
+    // qui ont un patrimoine mélangé sans doubles (si ramdom = true)
+    // sinon je créé une population d'individus indentiques de patrimoine 'genes' (tableau)
     
     for (size_t i = 0; i < m_popSize; ++i) {
         m_pop.push_back (new Individu (genes, ramdom));
@@ -40,7 +40,7 @@ void Population::generate (const std::vector<gene>& genes, bool ramdom)
     
 }
 
-void Population::doGenerationCycle (AbstractNoteur& noteur, size_t nbSolutions)
+void Population::doGenerationCycle (AbstractNoteur& noteur, unsigned int nbSolutions)
 {
     if (!m_isNoted) {
         noteAll (noteur);
@@ -85,50 +85,6 @@ void Population::doGenerations (unsigned int nbGeneration, AbstractNoteur& noteu
     }
 }
 
-void Population::noteAll (AbstractNoteur& noteur)
-{
-    // On reset la somme des notes du noteur
-    noteur.resetSommeNotes();
-    
-    // On applique le noteur sur chaque individu
-    for (auto a : m_pop) {
-        a->setNote (noteur (a));
-        
-        // Si la note de l'individu noté est égale à l'obectif
-        // Et que l'individu n'est pas déjà dans notre liste de réponses
-        if (a->getNote() == m_objectif && std::find (m_solutions.begin(), m_solutions.end(), *a) == m_solutions.end()) {
-            // On l'ajoute
-            m_solutions.push_back (*a);
-        }
-    }
-    
-    m_isNoted = true;
-    m_sommeNotes = noteur.getSommeNotes();
-}
-
-size_t Population::size() const
-{
-    return m_popSize;
-}
-
-Population::it Population::begin()
-{
-    return m_pop.begin();
-}
-Population::it Population::end()
-{
-    return m_pop.end();
-}
-
-const std::vector<Individu> Population::getSolutions() const
-{
-    return m_solutions;
-}
-const std::vector<Individu *> Population::getPopulation() const
-{
-    return m_pop;
-}
-
 void Population::select()
 {
     for (int i = 0; i < std::ceil (static_cast<double> (m_popSize) * m_fracSupr); ++i) {
@@ -145,6 +101,7 @@ void Population::select()
     }
     
 }
+
 void Population::mating ()
 {
     std::random_device rd;
@@ -175,6 +132,7 @@ void Population::mating ()
         m_pop.push_back (new Individu (pat, false));
     }
 }
+
 void Population::mutation()
 {
     std::random_device rd;
@@ -183,6 +141,58 @@ void Population::mutation()
     
         (*selectRandomIndividu())->swapAlleles (rd() % 9, rd() % 9);
     }
+}
+
+void Population::noteAll (AbstractNoteur& noteur)
+{
+    // On reset la somme des notes du noteur
+    noteur.resetSommeNotes();
+    
+    // On applique le noteur sur chaque individu
+    for (auto a : m_pop) {
+    
+        // On appelle le foncteur 'noteur' avec comme parametre 'a' (l'individu actuel)
+        a->setNote (noteur (a));
+        
+        // Si la note de l'individu noté est égale à l'obectif
+        // Et que l'individu n'est pas déjà dans notre liste de réponses
+        if (a->getNote() == m_objectif && std::find (m_solutions.begin(), m_solutions.end(), *a) == m_solutions.end()) {
+            // On l'ajoute
+            m_solutions.push_back (*a);
+        }
+    }
+    
+    m_isNoted = true;
+    m_sommeNotes = noteur.getSommeNotes();
+}
+
+size_t Population::size() const
+{
+    return m_popSize;
+}
+
+Population::it Population::begin()
+{
+    return m_pop.begin();
+}
+Population::it Population::end()
+{
+    return m_pop.end();
+}
+
+bool Population::tirageUniforme() const
+{
+    return m_tirageUniforme;
+}
+
+const std::vector<Individu> Population::getSolutions() const
+{
+    return m_solutions;
+}
+
+const std::vector<Individu *> Population::getPopulation() const
+{
+    return m_pop;
 }
 
 Population::it Population::selectRandomIndividu ()
@@ -247,7 +257,7 @@ std::ostream& operator<< (std::ostream& os, const Population& pop)
         map.insert (std::pair<gene, Individu *> (a->getNote(), a));
     }
     
-    //je les 'affiche' dans mon flux
+    //je les 'affiche' dans mon flux via la surchage de l'opérateur '<<' de la classe Individu
     
     for (auto a : map) {
         os << *a.second << std::endl;
