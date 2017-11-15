@@ -7,6 +7,5 @@ before_install:
  - sudo apt-get install qt5-default qttools5-dev-tools
 
 script:
- - qmake -project
  - qmake AlgoGenetique.pro
  - make CXXFLAGS+=" -std=c++11" LFLAGS+=" -std=c++11"
