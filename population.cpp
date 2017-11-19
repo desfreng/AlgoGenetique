@@ -180,7 +180,7 @@ Population::it Population::end()
     return _pop.end();
 }
 
-bool Population::typeSelection() const
+Tirage Population::typeSelection() const
 {
     return _typeSelection;
 }
@@ -204,7 +204,7 @@ Population::it Population::selectRandomIndividu ()
 {
     std::random_device rd;
     
-    if (_typeSelection == Uniforme) {
+    if (_typeSelection == Tirage::Uniforme) {
     
         // Je tire au sort un individu
         

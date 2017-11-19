@@ -8,6 +8,15 @@
 #include <string>
 #include <algorithm>
 
+#include <cstdio>
+#include <cstdlib>
+
+#if defined (WIN32)
+    #define Clear() system("cls")
+#elif defined (linux)
+    #define Clear() system("clear")
+#endif
+
 #include "general.h"
 
 class GuiClass

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-GuiClass::GuiClass() : _nbReponses (2), _nbIndividus (7500), _fracSupr (0.25), _fracMut (0.02), _objectif (1), _typeTirage (Proportionel), _coefficient (1), _debug (false) {}
+GuiClass::GuiClass() : _nbReponses (2), _nbIndividus (7500), _fracSupr (0.25), _fracMut (0.02), _objectif (1), _typeTirage (Tirage::Proportionel), _coefficient (1), _debug (false) {}
 
 void GuiClass::init()
 {
@@ -216,10 +216,10 @@ void GuiClass::setTirage()
         }
         else {
             if (typetirage == 1) {
-                _typeTirage = Uniforme;
+                _typeTirage = Tirage::Uniforme;
             }
             else {
-                _typeTirage = Proportionel;
+                _typeTirage = Tirage::Proportionel;
             }
         }
         
@@ -288,7 +288,7 @@ std::ostream& operator<< (std::ostream& os, const GuiClass& gui)
     os << "Nombre d'Individus : " << gui.getNbIndividus() << endl;
     os << "Probabilté de supression : " << gui.getFracSupr() * 100 << "%" << endl;
     os << "Probabilté de mutation : " << gui.getFracMut() * 100 << "%" << endl;
-    os << "Type de Tirage : " << gui.typeTirage() << endl;
+    os << "Type de Tirage : " << gui.typeTirage().tirageToString() << endl;
     os << "Nombre de réponses souhaité : " << gui.getNbReponses() << endl << endl;
     
     os << "  Noteur : " << endl;

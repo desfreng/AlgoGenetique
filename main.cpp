@@ -26,12 +26,6 @@ int main()
     pop.generation (genes);
     pop.noteAll (foncteur);
     
-    ofstream file ("population.txt");
-    
-    file << pop << endl;
-    
-    file.close();
-    
     pop.doGenerationCycle (foncteur, gui.getNbReponses());
     
     for (auto a : pop.solutions()) {

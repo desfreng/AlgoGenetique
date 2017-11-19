@@ -9,10 +9,10 @@ Noteur::Noteur()
     m_debug  = false;
     m_os = &std::cout;
 }
-Noteur::Noteur (double resultat, double coeficiant, bool debug)
+Noteur::Noteur (double resultat, double coefficient, bool debug)
 {
     m_resultat = resultat;
-    m_coef = coeficiant;
+    m_coef = coefficient;
     m_debug  = debug;
     m_os = &std::cout;
 }
@@ -80,7 +80,7 @@ note Noteur::operator() (Individu *individu)
     /*          DEUXIÈME PARTIE
      *
      * Si le résulat n'est pas un entier
-     * On ajoute à la note la partie décimale multipliée par un coeficiant (m_coef)
+     * On ajoute à la note la partie décimale multipliée par un coefficient (m_coef)
      */
     
     //Partie décimale de chaque 'parenthèses'
@@ -107,7 +107,7 @@ note Noteur::operator() (Individu *individu)
     /*          TROISIÈME PARTIE
      *
      * On vérifie que le patrimoine de l'individu contient bien que des nombres différents
-     * Sinon, on ajoute à la note le nombre de nombres idebtiques multiplié par le même coeficiant (m_coef)
+     * Sinon, on ajoute à la note le nombre de nombres idebtiques multiplié par le même coefficient (m_coef)
      */
     
     std::vector<gene> doubles;

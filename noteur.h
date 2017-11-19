@@ -14,7 +14,7 @@ class Noteur : public AbstractNoteur
     public:
         //Constructeurs
         Noteur();
-        Noteur (double resultat, double coeficiant = 1, bool debug = false);
+        Noteur (double resultat, double coefficient = 1, bool debug = false);
         
         //Destructeur
         ~Noteur();
@@ -28,7 +28,7 @@ class Noteur : public AbstractNoteur
     private :
     
         double m_resultat;      //
-        double m_coef;    // Paramètres Constant de la Classe
+        double m_coef;          // Paramètres Constant de la Classe
         bool m_debug;           //
         std::ostream *m_os;     //
 };

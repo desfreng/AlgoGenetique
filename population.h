@@ -27,7 +27,7 @@ class Population
         typedef typename std::vector<Individu *>::iterator it;
         
         // Constructeur et Destructeur
-        Population (size_t size, double fracSupr, double fracMut, Tirage tirageUniforme = Proportionel, note objectif = 1);
+        Population (size_t size, double fracSupr, double fracMut, Tirage tirageUniforme = Tirage::Proportionel, note objectif = 1);
         ~Population();
         
         // Fonctions utilisées pour générer une population
@@ -57,8 +57,8 @@ class Population
         it begin();
         it end();
         
-        // Renvoi un boléen utilisé lors du tirage (Uniforme ou non)
-        bool typeSelection() const;
+        // Renvoi le type du tirage (Uniforme ou Proprtionel)
+        Tirage typeSelection() const;
         
         unsigned int generation() const;
         
