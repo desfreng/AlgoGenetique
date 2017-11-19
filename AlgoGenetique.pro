@@ -7,7 +7,8 @@ QMAKE_CXXFLAGS += -std=gnu++11
 SOURCES += main.cpp \
     noteur.cpp \
     population.cpp \
-    individu.cpp
+    individu.cpp \
+    guiclass.cpp
 
 HEADERS += \
     population.h \
@@ -15,4 +16,5 @@ HEADERS += \
     population.h \
     noteur.h \
     general.h \
-    abstractnoteur.h
+    abstractnoteur.h \
+    guiclass.h

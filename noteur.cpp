@@ -9,7 +9,7 @@ Noteur::Noteur()
     m_debug  = false;
     m_os = &std::cout;
 }
-Noteur::Noteur (double resultat, unsigned int coeficiant, bool debug)
+Noteur::Noteur (double resultat, double coeficiant, bool debug)
 {
     m_resultat = resultat;
     m_coef = coeficiant;
@@ -63,7 +63,7 @@ note Noteur::operator() (Individu *individu)
     double resul = static_cast<double> (individu->getAllele (0)) + par1 + static_cast<double> (individu->getAllele (3)) +
                    (12.0 * static_cast<double> (individu->getAllele (4))) - static_cast<double> (individu->getAllele (5)) - 11.0 + par3 - 10.0;
                    
-    laNote = std::abs (resul - m_resultat);
+    laNote += std::abs (resul - m_resultat);
     
     //Partie de Debug (instancier Noteur avec debug = true pour voir)
     if (m_debug && (m_os != nullptr)) {
@@ -97,7 +97,7 @@ note Noteur::operator() (Individu *individu)
         *m_os << par1 << " = " << floor (par1) << " (U) + " << fracPar1 << " (D)" << std::endl;
         *m_os << par3 << " = " << floor (par3) << " (U) + " << fracPar3 << " (D)" << std::endl;
         *m_os << fracPar1 << " + " << fracPar3 << " = " << fracPar1 + fracPar3 << std::endl << std::endl;
-        *m_os << "Donc Note = " << laNote << std::endl << std::endl;
+        *m_os << "Donc Note = " << laNote  << " (" << laNote - reste *m_coef << " + " << reste *m_coef << ")" << std::endl << std::endl;
     }
     
     
@@ -137,6 +137,7 @@ note Noteur::operator() (Individu *individu)
         *m_os << "---------------------------------------------" << std::endl << std::endl;
         
     }
+    
     
     // On retourne la note
     m_sommeNotes += static_cast<note> (ceil (laNote));

@@ -3,11 +3,22 @@
 
 #include <exception>
 #include <string>
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
 
-//Typedefs des types utilisés
+#if defined (WIN32)
+    #define Clear() system("cls")
+#elif defined (linux)
+    #define Clear() system("clear")
+#endif
+
+//Typedefs et enums des types utilisés
 
 typedef unsigned int gene;
 typedef unsigned int note;
+
+enum Tirage {Uniforme, Proportionel};
 
 /* Classe simple pour gérer les exeptions
  * Hérite de std::exception

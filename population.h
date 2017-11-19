@@ -27,22 +27,22 @@ class Population
         typedef typename std::vector<Individu *>::iterator it;
         
         // Constructeur et Destructeur
-        Population (size_t size, double fracSupr, double fracMut, note objectif = 1, bool tirageUniforme = false);
+        Population (size_t size, double fracSupr, double fracMut, Tirage tirageUniforme = Proportionel, note objectif = 1);
         ~Population();
         
         // Fonctions utilisées pour générer une population
-        void generate (const std::vector<gene>& genes, unsigned int nbgenes);
-        void generate (const std::vector<gene>& genes, bool ramdom = true);
+        void generation (const std::vector<gene>& genes, unsigned int nbgenes);
+        void generation (const std::vector<gene>& genes, bool ramdom = true);
         
         // Fonctions utilisées pour réaliser des générations
         void doGenerationCycle (AbstractNoteur& comp, unsigned int nbSolutions);
         void doGenerations (unsigned int nbGeneration, AbstractNoteur& comp);
         
         // Fonction qui s'occupe de la sélection des individus
-        void select();
+        void selection();
         
         // Fonction qui s'occupe du croisement des individus
-        void mating ();
+        void croisement ();
         
         // Fonction qui s'occupe de la mutation des individus
         void mutation();
@@ -58,7 +58,7 @@ class Population
         it end();
         
         // Renvoi un boléen utilisé lors du tirage (Uniforme ou non)
-        bool uniformRandomDraw() const;
+        bool typeSelection() const;
         
         unsigned int generation() const;
         
@@ -77,20 +77,20 @@ class Population
          */
         it selectRandomIndividu();
         
-        unsigned int m_sommeNotes;
+        unsigned int _sommeNotes;
         
-        bool m_isNoted;
+        bool _isNoted;
         
-        unsigned int m_nbGeneration;    //
-        bool m_tirageUniforme;          //
-        note m_objectif;                //
-        size_t m_popSize;               // Paramètres de la classe
-        double m_fracSupr;              //
-        double m_fracMut;               //
+        unsigned int _nbGeneration;    //
+        Tirage _typeSelection;          //
+        note _objectif;                //
+        size_t _popSize;               // Paramètres de la classe
+        double _fracSupr;              //
+        double _fracMut;               //
         
-        std::vector<Individu *> m_pop;      // Conteneur des Individus
+        std::vector<Individu *> _pop;      // Conteneur des Individus
         
-        std::vector<Individu> m_solutions;  // Conteneur des Solutions
+        std::vector<Individu> _solutions;  // Conteneur des Solutions
 };
 
 // Surchage de l'opếrateur '<<' pour afficher facilement la population dans un flux (fichier ou cout)

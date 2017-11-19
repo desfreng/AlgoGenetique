@@ -1,48 +1,48 @@
 #include "population.h"
 
-Population::Population (size_t size, double fracSupr, double fracMut, note objectif, bool tirageUniforme) :  m_isNoted (false), m_nbGeneration (0), m_tirageUniforme (tirageUniforme),  m_objectif (objectif), m_popSize (size), m_fracSupr (fracSupr), m_fracMut (fracMut) {}
+Population::Population (size_t size, double fracSupr, double fracMut, Tirage tirageUniforme, note objectif) :  _isNoted (false), _nbGeneration (0), _typeSelection (tirageUniforme),  _objectif (objectif), _popSize (size), _fracSupr (fracSupr), _fracMut (fracMut) {}
 Population::~Population()
 {
     // Je suprime tous mes individus
     
-    for (Individu *a : m_pop) {
+    for (Individu *a : _pop) {
         delete a;
         a = 0;
     }
 }
 
-void Population::generate (const std::vector<gene>& genes, unsigned int nbgenes)
+void Population::generation (const std::vector<gene>& genes, unsigned int nbgenes)
 {
-    m_pop.clear();
+    _pop.clear();
     
     // Je remplis ma population avec des nouveaux individus
     // qui ont un patrimoine mélangé avec doubles
     
-    for (size_t i = 0; i < m_popSize; ++i) {
-        m_pop.push_back (new Individu (genes, nbgenes));
+    for (size_t i = 0; i < _popSize; ++i) {
+        _pop.push_back (new Individu (genes, nbgenes));
     }
     
-    m_isNoted = false;
+    _isNoted = false;
 }
-void Population::generate (const std::vector<gene>& genes, bool ramdom)
+void Population::generation (const std::vector<gene>& genes, bool ramdom)
 {
-    m_pop.clear();
+    _pop.clear();
     
     // Je remplis ma population avec des nouveaux individus
     // qui ont un patrimoine mélangé sans doubles (si ramdom = true)
     // sinon je créé une population d'individus indentiques de patrimoine 'genes' (tableau)
     
-    for (size_t i = 0; i < m_popSize; ++i) {
-        m_pop.push_back (new Individu (genes, ramdom));
+    for (size_t i = 0; i < _popSize; ++i) {
+        _pop.push_back (new Individu (genes, ramdom));
     }
     
-    m_isNoted = false;
+    _isNoted = false;
     
 }
 
 void Population::doGenerationCycle (AbstractNoteur& noteur, unsigned int nbSolutions)
 {
-    if (!m_isNoted) {
+    if (!_isNoted) {
         noteAll (noteur);
     }
     
@@ -51,20 +51,20 @@ void Population::doGenerationCycle (AbstractNoteur& noteur, unsigned int nbSolut
     
     // 1 génération : Sélection, Croisement, Mutation
     
-    while (m_solutions.size() <= nbSolutions - 1) {
-        std::cout << "Generation n° " << m_nbGeneration << std::endl;
-        select();
+    while (_solutions.size() <= nbSolutions - 1) {
+        std::cout << "Generation n° " << _nbGeneration << std::endl;
+        selection();
         noteAll (noteur);
-        mating();
+        croisement();
         noteAll (noteur);
         mutation();
         noteAll (noteur);
-        ++m_nbGeneration;
+        ++_nbGeneration;
     }
 }
 void Population::doGenerations (unsigned int nbGeneration, AbstractNoteur& noteur)
 {
-    if (!m_isNoted) {
+    if (!_isNoted) {
         noteAll (noteur);
     }
     
@@ -72,43 +72,43 @@ void Population::doGenerations (unsigned int nbGeneration, AbstractNoteur& noteu
     
     // 1 génération : Sélection, Croisement, Mutation
     
-    unsigned int nbGenerationAFaire = m_nbGeneration + nbGeneration;
+    unsigned int nbGenerationAFaire = _nbGeneration + nbGeneration;
     
-    for (; m_nbGeneration < nbGenerationAFaire; ++m_nbGeneration) {
-        std::cout << "Generation n° " << m_nbGeneration << std::endl;
-        select();
+    for (; _nbGeneration < nbGenerationAFaire; ++_nbGeneration) {
+        std::cout << "Generation n° " << _nbGeneration << std::endl;
+        selection();
         noteAll (noteur);
-        mating();
+        croisement();
         noteAll (noteur);
         mutation();
         noteAll (noteur);
     }
 }
 
-void Population::select()
+void Population::selection()
 {
-    for (int i = 0; i < std::ceil (static_cast<double> (m_popSize) * m_fracSupr); ++i) {
+    for (int i = 0; i < std::ceil (static_cast<double> (_popSize) * _fracSupr); ++i) {
     
         // Je tire un individu au sort
         it individu = selectRandomIndividu();
         
         //Je retire sa 'part de note' de la somme des notes.
-        m_sommeNotes -= (*individu)->getNote();
+        _sommeNotes -= (*individu)->getNote();
         
         // Je le suprime
         delete (*individu);
-        m_pop.erase (individu);
+        _pop.erase (individu);
     }
     
 }
 
-void Population::mating ()
+void Population::croisement ()
 {
     std::random_device rd;
     
-    size_t actualPopSize = m_pop.size();
+    size_t actualPopSize = _pop.size();
     
-    for (unsigned int i = 0; i < m_popSize - actualPopSize; i++) {
+    for (unsigned int i = 0; i < _popSize - actualPopSize; i++) {
         // Definition du point de croisement
         int crossPoint = rd() % 9;
         
@@ -129,7 +129,7 @@ void Population::mating ()
         pat.insert (pat.begin(), pat2.begin(), pat2.end());         // pat = {1, 2, 3, 4, 5}
         pat.insert (pat.begin(), pat1.begin(), pat1.end());         // pat = {1, 2, 3, 4, 5, 4, 3, 2, 1}
         
-        m_pop.push_back (new Individu (pat, false));
+        _pop.push_back (new Individu (pat, false));
     }
 }
 
@@ -137,7 +137,7 @@ void Population::mutation()
 {
     std::random_device rd;
     
-    for (int i = 0; i < std::ceil (static_cast<double> (m_popSize) * m_fracMut); ++i) {
+    for (int i = 0; i < std::ceil (static_cast<double> (_popSize) * _fracMut); ++i) {
     
         (*selectRandomIndividu())->swapAlleles (rd() % 9, rd() % 9);
     }
@@ -149,66 +149,66 @@ void Population::noteAll (AbstractNoteur& noteur)
     noteur.resetSommeNotes();
     
     // On applique le noteur sur chaque individu
-    for (auto a : m_pop) {
+    for (auto a : _pop) {
     
         // On appelle le foncteur 'noteur' avec comme parametre 'a' (l'individu actuel)
         a->setNote (noteur (a));
         
         // Si la note de l'individu noté est égale à l'obectif
         // Et que l'individu n'est pas déjà dans notre liste de réponses
-        if (a->getNote() == m_objectif && std::find (m_solutions.begin(), m_solutions.end(), *a) == m_solutions.end()) {
+        if (a->getNote() == _objectif && std::find (_solutions.begin(), _solutions.end(), *a) == _solutions.end()) {
             // On l'ajoute
-            m_solutions.push_back (*a);
+            _solutions.push_back (*a);
         }
     }
     
-    m_isNoted = true;
-    m_sommeNotes = noteur.getSommeNotes();
+    _isNoted = true;
+    _sommeNotes = noteur.getSommeNotes();
 }
 
 size_t Population::size() const
 {
-    return m_popSize;
+    return _popSize;
 }
 
 Population::it Population::begin()
 {
-    return m_pop.begin();
+    return _pop.begin();
 }
 Population::it Population::end()
 {
-    return m_pop.end();
+    return _pop.end();
 }
 
-bool Population::uniformRandomDraw() const
+bool Population::typeSelection() const
 {
-    return m_tirageUniforme;
+    return _typeSelection;
 }
 
 unsigned int Population::generation() const
 {
-    return m_nbGeneration;
+    return _nbGeneration;
 }
 
 const std::vector<Individu> Population::solutions() const
 {
-    return m_solutions;
+    return _solutions;
 }
 
 const std::vector<Individu *> Population::population() const
 {
-    return m_pop;
+    return _pop;
 }
 
 Population::it Population::selectRandomIndividu ()
 {
     std::random_device rd;
     
-    if (m_tirageUniforme) {
+    if (_typeSelection == Uniforme) {
     
         // Je tire au sort un individu
         
-        return m_pop.begin() + (rd() % m_pop.size());
+        return _pop.begin() + (rd() % _pop.size());
         
         // Tous les individus ont la même probabilité d'être sélectioné.
         
@@ -219,23 +219,23 @@ Population::it Population::selectRandomIndividu ()
         // Impossible d'en tirer 1 au sort
         // donc je jette une exeption
         
-        if (!m_isNoted) {
+        if (!_isNoted) {
             throw SimplExeption ("Individus non notés !", SimplExeption::IndividuNonNote);
         }
         
         unsigned int sommeNotesTemp = 0;
         
-        if (m_sommeNotes == 0) {
+        if (_sommeNotes == 0) {
             throw SimplExeption ("Division par 0 à la ligne : " + std::to_string (__LINE__), SimplExeption::DivisionParZero);
         }
         
         // Je tire au sort un nombre entre 0 et la somme des notes
-        unsigned int n = rd() % m_sommeNotes;
+        unsigned int n = rd() % _sommeNotes;
         
         // Je parcours tous mes individus afin de trouver
         // l'individu qui encadre ma note tirée
         
-        for (it it = m_pop.begin(); it != m_pop.end(); ++it) {
+        for (it it = _pop.begin(); it != _pop.end(); ++it) {
         
             if (n < sommeNotesTemp +  (*it)->getNote() && sommeNotesTemp <= n) {
                 return it;
