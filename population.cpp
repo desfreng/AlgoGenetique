@@ -1,4 +1,5 @@
 #include "population.h"
+#include <fstream>
 
 Population::Population (size_t size, double fracSupr, double fracMut, Tirage tirageUniforme, note objectif) :  _isNoted (false), _nbGeneration (0), _typeSelection (tirageUniforme),  _objectif (objectif), _popSize (size), _fracSupr (fracSupr), _fracMut (fracMut) {}
 Population::~Population()
@@ -76,6 +77,7 @@ void Population::doGenerations (unsigned int nbGeneration, AbstractNoteur& noteu
     
     for (; _nbGeneration < nbGenerationAFaire; ++_nbGeneration) {
         std::cout << "Generation n° " << _nbGeneration << std::endl;
+        std::cout << "Nombre d'individus : " << _pop.size() << std::endl;
         selection();
         noteAll (noteur);
         croisement();
@@ -87,12 +89,16 @@ void Population::doGenerations (unsigned int nbGeneration, AbstractNoteur& noteu
 
 void Population::selection()
 {
+    std::ofstream  crashlog ("log.txt", std::ofstream::ate);
+    crashlog << "Génération n°" << generation() << std::endl;
+    
     for (int i = 0; i < std::ceil (static_cast<double> (_popSize) * _fracSupr); ++i) {
     
         // Je tire un individu au sort
         it individu = selectRandomIndividu();
         
         //Je retire sa 'part de note' de la somme des notes.
+        crashlog << "Somme Notes : " << _sommeNotes << "-" << std::to_string ((*individu)->getNote()) << "(" << _sommeNotes - (*individu)->getNote() << ")" << std::endl;
         _sommeNotes -= (*individu)->getNote();
         
         // Je le suprime
@@ -100,6 +106,8 @@ void Population::selection()
         _pop.erase (individu);
     }
     
+    crashlog << std::endl << std::endl;
+    crashlog.close();
 }
 
 void Population::croisement ()
@@ -148,17 +156,20 @@ void Population::noteAll (AbstractNoteur& noteur)
     // On reset la somme des notes du noteur
     noteur.resetSommeNotes();
     
-    // On applique le noteur sur chaque individu
+    // On applique le noteur sur chaque individu ('a')
     for (auto a : _pop) {
     
-        // On appelle le foncteur 'noteur' avec comme parametre 'a' (l'individu actuel)
-        a->setNote (noteur (a));
-        
-        // Si la note de l'individu noté est égale à l'obectif
-        // Et que l'individu n'est pas déjà dans notre liste de réponses
-        if (a->getNote() == _objectif && std::find (_solutions.begin(), _solutions.end(), *a) == _solutions.end()) {
-            // On l'ajoute
-            _solutions.push_back (*a);
+        //Si 'a' n'a pas de note
+        if (!a->haveNote()) {
+            // On appelle le foncteur 'noteur' avec comme parametre 'a' (l'individu actuel)
+            a->setNote (noteur (a));
+            
+            // Si la note de l'individu noté est égale à l'obectif
+            // Et que l'individu n'est pas déjà dans notre liste de réponses
+            if (a->getNote() == _objectif && std::find (_solutions.begin(), _solutions.end(), *a) == _solutions.end()) {
+                // On l'ajoute
+                _solutions.push_back (*a);
+            }
         }
     }
     
@@ -226,7 +237,7 @@ Population::it Population::selectRandomIndividu ()
         unsigned int sommeNotesTemp = 0;
         
         if (_sommeNotes == 0) {
-            throw SimplExeption ("Division par 0 à la ligne : " + std::to_string (__LINE__), SimplExeption::DivisionParZero);
+            throw SimplExeption ("Division par 0 à la ligne : " + std::to_string (__LINE__) + " ( Somme des notes : " + std::to_string (_sommeNotes), SimplExeption::DivisionParZero);
         }
         
         // Je tire au sort un nombre entre 0 et la somme des notes

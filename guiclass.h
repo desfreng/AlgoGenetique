@@ -8,9 +8,8 @@
 #include <string>
 #include <algorithm>
 
-#include <cstdio>
+//On définit une version 'portable' d'effacer la console
 #include <cstdlib>
-
 #if defined (WIN32)
     #define Clear() system("cls")
 #elif defined (linux)
@@ -27,15 +26,13 @@ class GuiClass
         void init();
         void menu();
         
+        // Accesseurs des variables
         unsigned int getNbReponses() const;
         unsigned int getNbIndividus() const;
-        
         double getFracSupr() const;
         double getFracMut() const;
-        
         note getObjectif() const;
         Tirage typeTirage() const;
-        
         unsigned int getCoefficient() const;
         bool debug() const;
         

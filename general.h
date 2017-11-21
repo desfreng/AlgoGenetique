@@ -72,6 +72,21 @@ class SimplExeption : std::exception
             return m_cause;
         }
         
+        std::string causetoString() const noexcept {
+            switch (m_cause) {
+                case IndividuNonNote:
+                    return "Individu Non Noté !";
+                    
+                case DivisionParZero :
+                    return "Division Par Zero !";
+                    
+                default:
+                    return "Inconnu !";
+            }
+            
+        }
+        
+        
     private:
         Cause m_cause;
         std::string m_message;

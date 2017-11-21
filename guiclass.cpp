@@ -1,24 +1,32 @@
-#include "guiclass.h"
+﻿#include "guiclass.h"
 
 using namespace std;
 
+// Constructeur
 GuiClass::GuiClass() : _nbReponses (2), _nbIndividus (7500), _fracSupr (0.25), _fracMut (0.02), _objectif (1), _typeTirage (Tirage::Proportionel), _coefficient (1), _debug (false) {}
 
+//Menu des paramètres
 void GuiClass::init()
 {
     string temp;
     
+    //On affiche les paramètres
     cout << *this << endl;
+    
     cout << "Voulez-vous modifier les paramètres ? (O/N) : ";
     cin >> temp;
-    
     cout << endl;
+    
+    //On tranforme la chaine en minuscule pour éviter de gérer encore plus de cas ("Yes", "YEs", "YES", "yes")
     transform (temp.begin(), temp.end(), temp.begin(), ::tolower);
     
+    //Tant que l'utilisateur veut modifier les paramètres
     while (temp == "o" || temp == "oui" || temp == "y" || temp == "yes") {
-    
+        Clear();
+        
         unsigned int choix = 0;
         
+        //Tant que l'utilisateur n'a pas choisi un menu valide on continue de lui en proposer un
         do {
             cout << "Entrer le numéro du paramètre correspondant : " << endl;
             cout << "    1. Nombre d'Individus" << endl;
@@ -31,13 +39,26 @@ void GuiClass::init()
             cout << "    8. Quitter le menu" << endl;
             cout << "Choix (1~8) : ";
             
+            //On efface la console entre-deux
+            
+            //Si l'opérateur n'a pas rentré un nombre entier positif entre 1 et 8
             if (! (cin >> choix) || (choix < 1) || (choix > 8)) {
-                cout << "Veulliez entrer un nombre entre 1 et 9 !" << endl;
+                //On l'informe de son choix incorect
+                //On ignore les erreurs
+                cin.clear();
+                cin.ignore (numeric_limits<streamsize>::max(), '\n' );
+                
+                Clear();
+                cout << "Veulliez entrer un nombre entre 1 et 8 !" << endl;
             }
-        } while (choix < 1 || choix > 9);
+            
+            
+        } while (choix < 1 || choix > 8);
         
         Clear();
         
+        //On appelle la fonction correspondante au choix sauf
+        //le cas n°8 ('Quitter le menu') car il fonctionne sans traitement
         
         if (choix == 1) {
             setIndividu();
@@ -62,12 +83,15 @@ void GuiClass::init()
         }
         
         Clear();
+        
+        //On affiche les paramètres et on redemande à l'utilisateur s'il veut les remodifier
         cout << *this << endl;
         
         cout << "Voulez-vous continuer de modifier les paramètres ? (O/N) : ";
         cin >> temp;
-        
         cout << endl;
+        
+        //On tranforme la chaine en minuscule pour éviter de gérer encore plus de cas ("Yes", "YEs", "YES", "yes")
         transform (temp.begin(), temp.end(), temp.begin(), ::tolower);
     }
     
@@ -112,92 +136,101 @@ bool GuiClass::debug() const
 // Demandes des valeurs des variables
 void GuiClass::setIndividu()
 {
-    do {
-        cout << "Entrez un nombre d'individu : ";
+    cout << "Entrez un nombre d'individu : ";
+    
+    //Tant que l'entrée de l'utilisateur n'est pas valide
+    while (! (cin >> _nbIndividus) || _nbIndividus == 0) {
+        cout << endl;
         
-        if (! (cin >> _nbIndividus)) {
-            cout << "Veillez entrer un nombre entier positif !" << endl;
-        }
-        
+        //On éfface les erreurs
         cin.clear();
         cin.ignore (numeric_limits<streamsize>::max(), '\n' );
         
-    } while (_nbIndividus == 0);
+        //et on lui redemande
+        Clear();
+        cout << "Veillez entrer un nombre entier strictement positif !" << endl;
+        cout << "Entrez un nombre d'individu : ";
+    }
     
     Clear();
 }
 void GuiClass::setReponses()
 {
-    do {
-        cout << "Entrez le nombre de réponses souhaité : ";
+    cout << "Entrez le nombre de réponses souhaité : ";
+    
+    //Tant que l'entrée de l'utilisateur n'est pas valide
+    while (! (cin >> _nbReponses) || _nbReponses == 0) {
+        cout << endl;
         
-        if (! (cin >> _nbReponses) || _nbReponses == 0) {
-            cout << "Veillez entrer un nombre entier strictement positif !" << endl;
-        }
-        
+        //On éfface les erreurs
         cin.clear();
         cin.ignore (numeric_limits<streamsize>::max(), '\n' );
         
-    } while (_nbReponses == 0);
+        //et on lui redemande
+        Clear();
+        cout << "Veillez entrer un nombre entier strictement positif !" << endl;
+        cout << "Entrez le nombre de réponses souhaité : ";
+    }
     
     Clear();
 }
 void GuiClass::setFracMut()
 {
-    do {
-        cout << "Entrez la proportion d'individu modifiés par mutation à chaque génération : ";
+    cout << "Entrez la proportion d'individu modifiés par mutation à chaque génération : ";
+    
+    //Tant que l'entrée de l'utilisateur n'est pas valide
+    while (! (cin >> _fracMut) || _fracMut < 0 || _fracMut > 1) {
+        cout << endl;
         
-        if (! (cin >> _fracMut)) {
-            cout << "Veillez entrer un nombre décimal !" << endl;
-            _fracMut = -1.0;
-            
-        }
-        else if (_fracMut < 0 || _fracMut > 1) {
-            cout << "Veillez entrer un nombre décimal entre 0 et 1 compris !" << endl;
-            _fracMut = -1.0;
-        }
-        
+        //On éfface les erreurs
         cin.clear();
         cin.ignore (numeric_limits<streamsize>::max(), '\n' );
         
-    } while (_fracMut < 0.0);
+        //et on lui redemande
+        Clear();
+        cout << "Veillez entrer un nombre décimal entre 0 et 1 compris !" << endl;
+        cout << "Entrez la proportion d'individu modifiés par mutation à chaque génération : ";
+    }
     
     Clear();
 }
 void GuiClass::setFracSupr()
 {
-    do {
-        cout << "Entrez la proportion d'individu générés par croisement à chaque génération : ";
+    cout << "Entrez la proportion d'individu générés par croisement à chaque génération : ";
+    
+    //Tant que l'entrée de l'utilisateur n'est pas valide
+    while (! (cin >> _fracSupr) || _fracSupr < 0 || _fracSupr > 1) {
+        cout << endl;
         
-        if (! (cin >> _fracSupr)) {
-            cout << "Veillez entrer un nombre décimal !" << endl;
-            _fracSupr = -1.0;
-        }
-        else if (_fracSupr < 0 || _fracSupr > 1) {
-            cout << "Veillez entrer un nombre décimal entre 0 et 1 compris !" << endl;
-            _fracSupr = -1.0;
-        }
-        
+        //On éfface les erreurs
         cin.clear();
         cin.ignore (numeric_limits<streamsize>::max(), '\n' );
         
-    } while (_fracSupr < 0.0);
+        //et on lui redemande
+        Clear();
+        cout << "Veillez entrer un nombre décimal entre 0 et 1 compris !" << endl;
+        cout << "Entrez la proportion d'individu générés par croisement à chaque génération : ";
+    }
     
     Clear();
 }
 void GuiClass::setObjectif()
 {
-    do {
-        cout << "Entrez l'objectif souhaité [Défaut : 66] : ";
+    cout << "Entrez l'objectif souhaité [Défaut : 66] : ";
+    
+    //Tant que l'entrée de l'utilisateur n'est pas valide
+    while (! (cin >> _objectif) || _objectif == 0) {
+        cout << endl;
         
-        if (! (cin >> _objectif) || _objectif == 0) {
-            cout << "Veillez entrer un nombre entier strictement positif !" << endl;
-        }
-        
+        //On éfface les erreurs
         cin.clear();
         cin.ignore (numeric_limits<streamsize>::max(), '\n' );
         
-    } while (_objectif == 0);
+        //et on lui redemande
+        Clear();
+        cout << "Veillez entrer un nombre entier strictement positif !" << endl;
+        cout << "Entrez l'objectif souhaité [Défaut : 66] : ";
+    }
     
     Clear();
 }
@@ -205,44 +238,54 @@ void GuiClass::setTirage()
 {
     unsigned int typetirage;
     
-    do {
+    cout << "Choisisez un type de tirage : " << endl;
+    cout << "    1. Tirage Uniforme : tous les individus ont la même chance d'étre selctioné" << endl;
+    cout << "    2. Tirage Proportionel à la note : plus la note est élevée, plus la probabilité d'être sélectioné est forte" << endl;
+    cout << "Choix : ";
+    
+    
+    while (! (cin >> typetirage) || typetirage < 1 || typetirage > 2) {
+        cout << endl;
+        
+        //On éfface les erreurs
+        cin.clear();
+        cin.ignore (numeric_limits<streamsize>::max(), '\n' );
+        
+        //et on lui redemande
+        Clear();
+        cout << "Veillez choisir l'option 1 ou 2 !" << endl;
         cout << "Choisisez un type de tirage : " << endl;
         cout << "    1. Tirage Uniforme : tous les individus ont la même chance d'étre selctioné" << endl;
         cout << "    2. Tirage Proportionel à la note : plus la note est élevée, plus la probabilité d'être sélectioné est forte" << endl;
         cout << "Choix : ";
-        
-        if (! (cin >> typetirage) || typetirage < 1 || typetirage > 2) {
-            cout << "Veillez choisir l'option 1 ou 2 !" << endl;
-        }
-        else {
-            if (typetirage == 1) {
-                _typeTirage = Tirage::Uniforme;
-            }
-            else {
-                _typeTirage = Tirage::Proportionel;
-            }
-        }
-        
-        cin.clear();
-        cin.ignore (numeric_limits<streamsize>::max(), '\n' );
-        
-    } while (typetirage != 1 || typetirage != 2);
+    }
+    
+    if (typetirage == 1) {
+        _typeTirage = Tirage::Uniforme;
+    }
+    else {
+        _typeTirage = Tirage::Proportionel;
+    }
     
     Clear();
 }
 void GuiClass::setCoef()
 {
-    do {
-        cout << "Entrez le coeficiant souhaité [Défaut : 1] : ";
+    cout << "Entrez le coeficiant souhaité [Défaut : 1] : ";
+    
+    //Tant que l'entrée de l'utilisateur n'est pas valide
+    while (! (cin >> _coefficient) || _coefficient == 0) {
+        cout << endl;
         
-        if (! (cin >> _coefficient) || _coefficient == 0) {
-            cout << "Veillez entrer un nombre entier strictement positif !" << endl;
-        }
-        
+        //On éfface les erreurs
         cin.clear();
         cin.ignore (numeric_limits<streamsize>::max(), '\n' );
         
-    } while (_coefficient == 0);
+        //et on lui redemande
+        Clear();
+        cout << "Veillez entrer un nombre entier strictement positif !" << endl;
+        cout << "Entrez le coeficiant souhaité [Défaut : 1] : ";
+    }
     
     Clear();
 }
@@ -250,38 +293,40 @@ void GuiClass::setDebug()
 {
     string temp;
     
-    do {
+    cout << "Voulez-vous activer la Debug ? [o/n] : ";
+    cin >> temp;
+    cout << endl;
+    
+    //On tranforme la chaine en minuscule pour éviter de gérer encore plus de cas ("Yes", "YEs", "YES", "yes")
+    transform (temp.begin(), temp.end(), temp.begin(), ::tolower);
+    
+    //Tant que l'entrée de l'utilisateur n'est pas valide
+    while (! (temp == "o" || temp == "oui" || temp == "y" || temp == "yes" || temp == "n" || temp == "non" || temp == "no")) {
+        //On lui redemande
+        Clear();
+        cout << "Veillez choisir entre 'o' et 'n' !" << endl;
         cout << "Voulez-vous activer la Debug ? [o/n] : ";
+        cin >> temp;
+        cout << endl;
+        
+        //On tranforme la chaine en minuscule pour éviter de gérer encore plus de cas ("Yes", "YEs", "YES", "yes")
         transform (temp.begin(), temp.end(), temp.begin(), ::tolower);
-        
-        if (! (cin >> temp)) {
-            cout << endl;
-            cout << "Veillez choisir entre 'o' et 'n' !" << endl;
-        }
-        else {
-            cout << endl;
-            
-            if (temp == "o" || temp == "oui" || temp == "y" || temp == "yes" ) {
-                _debug = true;
-            }
-            else if (temp == "n" || temp == "non" || temp == "no") {
-                _debug = false;
-            }
-            else {
-                cout << "Veillez choisir entre 'o' et 'n' !" << endl;
-            }
-        }
-        
-        cin.clear();
-        cin.ignore (numeric_limits<streamsize>::max(), '\n' );
-        
-    } while (! (temp == "o" || temp == "oui" || temp == "y" || temp == "yes" || temp == "n" || temp == "non" || temp == "no"));
+    }
     
     Clear();
+    
+    if (temp == "o" || temp == "oui" || temp == "y" || temp == "yes" ) {
+        _debug = true;
+    }
+    else if (temp == "n" || temp == "non" || temp == "no") {
+        _debug = false;
+    }
 }
 
+//Surcharge de l'opérateur '<<' pour afficher les paramètres
 std::ostream& operator<< (std::ostream& os, const GuiClass& gui)
 {
+    //On affiche les paramètres
     os << "Paramètres Actuels" << endl << endl;
     
     os << "  Population : " << endl;
@@ -297,4 +342,3 @@ std::ostream& operator<< (std::ostream& os, const GuiClass& gui)
     
     return os;
 }
-
