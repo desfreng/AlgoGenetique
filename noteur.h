@@ -20,7 +20,7 @@ class Noteur : public AbstractNoteur
         ~Noteur();
         
         //Met à jour le flux utilisé pour la debug
-        void setOstream (std::ostream& os);
+        void setOstream (std::ostream& os, bool force = false);
         
         //surcharge de "l'operateur ()", qui note l'individu passé en paramètre.
         note operator() (Individu *individu);

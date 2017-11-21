@@ -24,9 +24,9 @@ Noteur::~Noteur()
 }
 
 //Met à jour le flux utilisé pour la debug
-void Noteur::setOstream (std::ostream& os)
+void Noteur::setOstream (std::ostream& os, bool force)
 {
-    if (m_debug) {
+    if (m_debug || force) {
         m_os = &os;
     }
 }
@@ -40,6 +40,14 @@ note Noteur::operator() (Individu *individu)
         *m_os << "Individu : " << *individu << std::endl << std::endl;
     }
     
+    
+    //Si l'individu est déjà noté
+    if (individu->haveNote()) {
+        //On l'ajoute à la somme des notes
+        m_sommeNotes += individu->getNote();
+        //Et on retourne sa note
+        return individu->getNote();
+    }
     
     
     
@@ -138,6 +146,10 @@ note Noteur::operator() (Individu *individu)
         
     }
     
+    
+    //if (m_debug && (m_os != nullptr)) {
+    *m_os << "Somme Notes = " << m_sommeNotes + ceil (laNote) << " ( " << m_sommeNotes << " + " << ceil (laNote) << " ) " << std::endl;
+    //}
     
     // On retourne la note
     m_sommeNotes += static_cast<note> (ceil (laNote));

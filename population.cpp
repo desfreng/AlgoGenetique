@@ -77,7 +77,6 @@ void Population::doGenerations (unsigned int nbGeneration, AbstractNoteur& noteu
     
     for (; _nbGeneration < nbGenerationAFaire; ++_nbGeneration) {
         std::cout << "Generation n° " << _nbGeneration << std::endl;
-        std::cout << "Nombre d'individus : " << _pop.size() << std::endl;
         selection();
         noteAll (noteur);
         croisement();
@@ -89,25 +88,19 @@ void Population::doGenerations (unsigned int nbGeneration, AbstractNoteur& noteu
 
 void Population::selection()
 {
-    std::ofstream  crashlog ("log.txt", std::ofstream::ate);
-    crashlog << "Génération n°" << generation() << std::endl;
-    
+
     for (int i = 0; i < std::ceil (static_cast<double> (_popSize) * _fracSupr); ++i) {
     
         // Je tire un individu au sort
         it individu = selectRandomIndividu();
         
         //Je retire sa 'part de note' de la somme des notes.
-        crashlog << "Somme Notes : " << _sommeNotes << "-" << std::to_string ((*individu)->getNote()) << "(" << _sommeNotes - (*individu)->getNote() << ")" << std::endl;
         _sommeNotes -= (*individu)->getNote();
         
         // Je le suprime
         delete (*individu);
         _pop.erase (individu);
     }
-    
-    crashlog << std::endl << std::endl;
-    crashlog.close();
 }
 
 void Population::croisement ()
@@ -115,6 +108,8 @@ void Population::croisement ()
     std::random_device rd;
     
     size_t actualPopSize = _pop.size();
+    
+    std::vector<Individu *> temp;
     
     for (unsigned int i = 0; i < _popSize - actualPopSize; i++) {
         // Definition du point de croisement
@@ -137,7 +132,11 @@ void Population::croisement ()
         pat.insert (pat.begin(), pat2.begin(), pat2.end());         // pat = {1, 2, 3, 4, 5}
         pat.insert (pat.begin(), pat1.begin(), pat1.end());         // pat = {1, 2, 3, 4, 5, 4, 3, 2, 1}
         
-        _pop.push_back (new Individu (pat, false));
+        temp.push_back (new Individu (pat, false));
+    }
+    
+    for (auto a : temp) {
+        _pop.push_back (a);
     }
 }
 
@@ -160,21 +159,21 @@ void Population::noteAll (AbstractNoteur& noteur)
     for (auto a : _pop) {
     
         //Si 'a' n'a pas de note
-        if (!a->haveNote()) {
-            // On appelle le foncteur 'noteur' avec comme parametre 'a' (l'individu actuel)
-            a->setNote (noteur (a));
-            
-            // Si la note de l'individu noté est égale à l'obectif
-            // Et que l'individu n'est pas déjà dans notre liste de réponses
-            if (a->getNote() == _objectif && std::find (_solutions.begin(), _solutions.end(), *a) == _solutions.end()) {
-                // On l'ajoute
-                _solutions.push_back (*a);
-            }
+        // On appelle le foncteur 'noteur' avec comme parametre 'a' (l'individu actuel)
+        a->setNote (noteur (a));
+        
+        // Si la note de l'individu noté est égale à l'obectif
+        // Et que l'individu n'est pas déjà dans notre liste de réponses
+        
+        if (a->getNote() == _objectif && std::find (_solutions.begin(), _solutions.end(), *a) == _solutions.end()) {
+            // On l'ajoute
+            _solutions.push_back (*a);
         }
     }
     
     _isNoted = true;
     _sommeNotes = noteur.getSommeNotes();
+    
 }
 
 size_t Population::size() const
@@ -237,7 +236,7 @@ Population::it Population::selectRandomIndividu ()
         unsigned int sommeNotesTemp = 0;
         
         if (_sommeNotes == 0) {
-            throw SimplExeption ("Division par 0 à la ligne : " + std::to_string (__LINE__) + " ( Somme des notes : " + std::to_string (_sommeNotes), SimplExeption::DivisionParZero);
+            throw SimplExeption ("Division par 0 à la ligne : " + std::to_string (__LINE__) + " (Somme des notes : " + std::to_string (_sommeNotes) + ")", SimplExeption::DivisionParZero);
         }
         
         // Je tire au sort un nombre entre 0 et la somme des notes
@@ -259,7 +258,7 @@ Population::it Population::selectRandomIndividu ()
             sommeNotesTemp += (*it)->getNote();
         }
         
-        return begin();
+        return _pop.begin();
     }
 }
 
