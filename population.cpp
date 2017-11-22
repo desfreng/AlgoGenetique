@@ -1,7 +1,8 @@
 #include "population.h"
-#include <fstream>
 
 Population::Population (size_t size, double fracSupr, double fracMut, Tirage tirageUniforme, note objectif) :  _isNoted (false), _nbGeneration (0), _typeSelection (tirageUniforme),  _objectif (objectif), _popSize (size), _fracSupr (fracSupr), _fracMut (fracMut) {}
+Population::Population (const GuiClass& gui) :  _isNoted (false), _nbGeneration (0), _typeSelection (gui.typeTirage()),  _objectif (gui.getObjectif()), _popSize (gui.getNbIndividus()), _fracSupr (gui.getFracSupr()), _fracMut (gui.getFracMut()) {}
+
 Population::~Population()
 {
     // Je suprime tous mes individus
@@ -14,6 +15,10 @@ Population::~Population()
 
 void Population::generation (const std::vector<gene>& genes, unsigned int nbgenes)
 {
+    for (auto a : _pop) {
+        delete a;
+    }
+    
     _pop.clear();
     
     // Je remplis ma population avec des nouveaux individus
@@ -27,6 +32,10 @@ void Population::generation (const std::vector<gene>& genes, unsigned int nbgene
 }
 void Population::generation (const std::vector<gene>& genes, bool ramdom)
 {
+    for (auto a : _pop) {
+        delete a;
+    }
+    
     _pop.clear();
     
     // Je remplis ma population avec des nouveaux individus
@@ -101,6 +110,8 @@ void Population::selection()
         delete (*individu);
         _pop.erase (individu);
     }
+    
+    _isNoted = false;
 }
 
 void Population::croisement ()
@@ -108,8 +119,6 @@ void Population::croisement ()
     std::random_device rd;
     
     size_t actualPopSize = _pop.size();
-    
-    std::vector<Individu *> temp;
     
     for (unsigned int i = 0; i < _popSize - actualPopSize; i++) {
         // Definition du point de croisement
@@ -132,12 +141,10 @@ void Population::croisement ()
         pat.insert (pat.begin(), pat2.begin(), pat2.end());         // pat = {1, 2, 3, 4, 5}
         pat.insert (pat.begin(), pat1.begin(), pat1.end());         // pat = {1, 2, 3, 4, 5, 4, 3, 2, 1}
         
-        temp.push_back (new Individu (pat, false));
+        _pop.push_back (new Individu (pat, false));
     }
     
-    for (auto a : temp) {
-        _pop.push_back (a);
-    }
+    _isNoted = false;
 }
 
 void Population::mutation()
@@ -148,6 +155,8 @@ void Population::mutation()
     
         (*selectRandomIndividu())->swapAlleles (rd() % 9, rd() % 9);
     }
+    
+    _isNoted = false;
 }
 
 void Population::noteAll (AbstractNoteur& noteur)
@@ -174,6 +183,11 @@ void Population::noteAll (AbstractNoteur& noteur)
     _isNoted = true;
     _sommeNotes = noteur.getSommeNotes();
     
+}
+
+bool Population::estPrete()
+{
+    return _isNoted;
 }
 
 size_t Population::size() const

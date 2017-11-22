@@ -41,6 +41,9 @@ class Tirage
         bool operator== (const Tirage& a) {
             return a() == (*this)();
         }
+        void operator= (const Tirage& a) {
+            _mode = a();
+        }
         
     private:
         Mode _mode;
@@ -73,17 +76,14 @@ class SimplExeption : std::exception
         }
         
         std::string causetoString() const noexcept {
-            switch (m_cause) {
-                case IndividuNonNote:
-                    return "Individu Non Noté !";
-                    
-                case DivisionParZero :
-                    return "Division Par Zero !";
-                    
-                default:
-                    return "Inconnu !";
+            if (m_cause == IndividuNonNote) {
+                return "Individu Non Noté";
+            }
+            else if (m_cause ==  DivisionParZero ) {
+                return "Division Par Zero";
             }
             
+            return "Inconnu";
         }
         
         

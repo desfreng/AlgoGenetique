@@ -16,7 +16,14 @@ Noteur::Noteur (double resultat, double coefficient, bool debug)
     m_debug  = debug;
     m_os = &std::cout;
 }
-
+Noteur::Noteur (const GuiClass& gui)
+{
+    m_resultat = 66;
+    m_coef = gui.getCoefficient();
+    m_debug  = gui.debug();
+    m_os = &std::cout;
+    
+}
 //Destructeur
 Noteur::~Noteur()
 {
@@ -145,11 +152,6 @@ note Noteur::operator() (Individu *individu)
         *m_os << "---------------------------------------------" << std::endl << std::endl;
         
     }
-    
-    
-    //if (m_debug && (m_os != nullptr)) {
-    *m_os << "Somme Notes = " << m_sommeNotes + ceil (laNote) << " ( " << m_sommeNotes << " + " << ceil (laNote) << " ) " << std::endl;
-    //}
     
     // On retourne la note
     m_sommeNotes += static_cast<note> (ceil (laNote));

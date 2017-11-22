@@ -11,6 +11,8 @@
 #include "individu.h"
 #include "general.h"
 #include "abstractnoteur.h"
+#include "guiclass.h"
+
 
 /* Classe qui s'occupe de la gestion des individus.
  * Elle permet de réaliser des générations avec les fonctions :
@@ -28,6 +30,7 @@ class Population
         
         // Constructeur et Destructeur
         Population (size_t size, double fracSupr, double fracMut, Tirage tirageUniforme = Tirage::Proportionel, note objectif = 1);
+        Population (const GuiClass& gui);
         ~Population();
         
         // Fonctions utilisées pour générer une population
@@ -42,13 +45,16 @@ class Population
         void selection();
         
         // Fonction qui s'occupe du croisement des individus
-        void croisement ();
+        void croisement();
         
         // Fonction qui s'occupe de la mutation des individus
         void mutation();
         
         // Aplique le foncteur 'noteur' à chaque individu de la population pour les noter
         void noteAll (AbstractNoteur& noteur);
+        
+        // Renvoie 'true' si la population est prete pour une sélection, une mutation ou un croisement
+        bool estPrete();
         
         // Renvoi la taille théorique (elle varie lors de la selection avec la fonction Population::select() )
         size_t size() const;

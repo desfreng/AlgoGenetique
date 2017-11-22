@@ -1,13 +1,58 @@
 ﻿#include "guiclass.h"
+#include "population.h" // J'include aussi Population.h pour avoir les 'vraies' méthodes de la classe et non celles de la classe temporaire
+
+//On définit une fonction 'portable' pour effecer la console
+#if defined (WIN32)
+    #define Clear() system("cls")
+#elif defined (linux)
+    #define Clear() system("clear")
+#endif
 
 using namespace std;
 
+void GuiClass::pause()
+{
+    cout << "Appuyer sur Entrer pour continuer..." << endl;
+    
+#if defined (WIN32)
+    system ("PAUSE >nul");
+#elif defined (linux)
+    system ("read continue");
+#endif
+}
+
 // Constructeur
-GuiClass::GuiClass() : _nbReponses (2), _nbIndividus (7500), _fracSupr (0.25), _fracMut (0.02), _objectif (1), _typeTirage (Tirage::Proportionel), _coefficient (1), _debug (false) {}
+GuiClass::GuiClass()
+{
+    _nbReponses  = 2;
+    _nbIndividus  = 7500;
+    _fracSupr = 0.25;
+    _fracMut  = 0.02;
+    _objectif  = 1;
+    _typeTirage = new Tirage (Tirage::Proportionel);
+    _coefficient  = 1;
+    _debug  = false;
+    _pop = nullptr;
+    _noteur = nullptr;
+}
+GuiClass::~GuiClass()
+{
+    //On suprime ce que l'on a dynamiquement instancié.
+    delete  _typeTirage;
+}
+void GuiClass::setPopulation (Population *pop)
+{
+    _pop = pop;
+}
+void GuiClass::setNoteur (AbstractNoteur *noteur)
+{
+    _noteur = noteur;
+}
 
 //Menu des paramètres
-void GuiClass::init()
+void GuiClass::configurer()
 {
+    Clear();
     string temp;
     
     //On affiche les paramètres
@@ -96,8 +141,222 @@ void GuiClass::init()
     }
     
 }
-
-void GuiClass::menu() {}
+void GuiClass::menu()
+{
+    unsigned int choix;
+    bool quitter = false;
+    string buffer; // Buffer des Réponses Texte
+    
+    //Tant que l'utilisateur ne veut pas quitter
+    while (!quitter) {
+        //On affiche le menu
+        
+        
+        //Tant que le choix n'est pas vailde (entier positif entre 1 et 11)
+        //On continue de le demander
+        do {
+            cout << endl;
+            Clear();
+            
+            // On efface les erreurs
+            cin.clear();
+            cin.ignore (numeric_limits<streamsize>::max(), '\n' );
+            
+            cout << "       --- Menu Principal ---" << endl << endl;
+            cout << " 1.  Afficher la Population dans un fichier"  << endl;
+            cout << " 2.  Afficher les Réponses trouvés" << endl;
+            cout << " 3.  Effectuer n génération(s)" << endl;
+            cout << " 4.  Tenter de trouver n réponse(s)" << endl;
+            cout << " 5.  Selectionner les individus" << endl;
+            cout << " 6.  Croiser les individus" << endl;
+            cout << " 7.  Muter les individus" << endl;
+            cout << " 8.  Noter les individus" << endl;
+            cout << " 9.  Modifier les paramètres" << endl;
+            cout << " 10. Regérérer la population" << endl;
+            cout << " 11. Quitter" << endl;
+            
+            cout << "Choix : ";
+        } while (! (cin >> choix) || choix < 1 || choix > 11);
+        
+        cout << endl;
+        
+        if (choix == 1) {
+            cout << endl;
+            cout << "Entrer le nom de fichier : ";
+            cin >> buffer;
+            cout << endl;
+            
+            //On ouvre un fichier à la fin de celui-ci
+            ofstream out (buffer, ofstream::ate);
+            
+            //Puis on écrit dedans
+            out << "    --- Population ---" << endl;
+            out << "Nombre d'individus : " << _pop->population().size() << endl;
+            out << endl << *_pop << endl;
+            
+            //On enregistre
+            out.close();
+            
+            cout << "Population enregistrée !" << endl;
+            pause();
+        }
+        else if (choix == 2) {
+            do {
+                cout << endl;
+                Clear();
+                // On efface les erreurs
+                cin.clear();
+                cin.ignore (numeric_limits<streamsize>::max(), '\n' );
+                
+                cout << "Afficher les réponses dans : " << endl;
+                cout << "    1. la Console" << endl;
+                cout << "    2. un Fichier" << endl;
+                
+                cout << "Choix : ";
+            } while (! (cin >> choix) || choix < 1 || choix > 2);
+            
+            cout << endl;
+            
+            if (choix == 1) {
+                Clear();
+                
+                cout << "    --- Solutions ---" << endl;
+                cout << "Nombre de Solution : " << _pop->solutions().size() << endl;
+                cout << endl;
+                
+                for (auto a : _pop->solutions()) {
+                    cout << a << endl;
+                }
+                
+                pause();
+            }
+            else if (choix == 2) {
+                cout << endl << "Entrer le nom de fichier : ";
+                cin >> buffer;
+                cout << endl;
+                
+                //On ouvre un fichier à la fin de celui-ci
+                ofstream out (buffer, ofstream::ate);
+                
+                out << "    --- Solutions ---" << endl;
+                out << "Nombre de Solution : " << _pop->solutions().size() << endl;
+                out << endl;
+                
+                //Puis on écrit dedans
+                for (auto a : _pop->solutions()) {
+                    out << a << endl;
+                }
+                
+                //On enregistre
+                out.close();
+                
+                cout << "Solutions enregistrées !" << endl;
+                pause();
+            }
+            
+        }
+        else if (choix == 3) {
+            do {
+                cout << endl;
+                Clear();
+                
+                // On efface les erreurs
+                cin.clear();
+                cin.ignore (numeric_limits<streamsize>::max(), '\n' );
+                
+                cout << "Combien de générations voulez-vous effectuer ? : ";
+            } while (! (cin >> choix)); // On utilise la variable choix pour stoquer le nombre de génération à effectuer
+            
+            _pop->doGenerations (choix, *_noteur);
+            
+            cout << "Génération(s) effectuées !" << endl;
+            pause();
+            
+        }
+        else if (choix == 4) {
+            do {
+                cout << endl;
+                Clear();
+                
+                // On efface les erreurs
+                cin.clear();
+                cin.ignore (numeric_limits<streamsize>::max(), '\n' );
+                
+                cout << "Combien de réponses espérez-vous obtenir ? : ";
+            } while (! (cin >> choix) || choix < 1); // On utilise la variable choix pour stoquer le nombre de réponses supérieur à 1
+            
+            _pop->doGenerationCycle (*_noteur, choix);
+            
+            cout << "Génération(s) effectuées !" << endl;
+            pause();
+            
+        }
+        else if (choix == 5) {
+            if (_pop->estPrete()) {
+                _pop->selection();
+                cout << "Selection effectué !" << endl;
+            }
+            else {
+                cout << "Erreur !" << endl;
+                cout << "Vous devez noter la population avant !" << endl;
+            }
+            
+            pause();
+        }
+        else if (choix == 6) {
+            if (_pop->estPrete()) {
+                _pop->croisement();
+                cout << "Croisement effectué !" << endl;
+            }
+            else {
+                cout << "Erreur !" << endl;
+                cout << "Vous devez noter la population avant !" << endl;
+            }
+            
+            pause();
+            
+        }
+        else if (choix == 7) {
+            if (_pop->estPrete()) {
+                _pop->mutation();
+                
+                
+                cout << "Mutation effectuée !" << endl;
+            }
+            else {
+                cout << "Erreur !" << endl;
+                cout << "Vous devez noter la population avant !" << endl;
+            }
+            
+            pause();
+        }
+        else if (choix == 8) {
+            _pop->noteAll (*_noteur);
+            cout << "Population notée !" << endl;
+            pause();
+        }
+        else if (choix == 9) {
+            configurer(); // On appelle 'configurer' une 2eme fois, elle s'occupe de la gestion des paramètres
+        }
+        else if (choix == 10) {
+            _pop->generation ({1, 2, 3, 4, 5, 6, 7, 8, 9});
+            cout << "Population regénérée !" << endl;
+            pause();
+        }
+        else if (choix == 11) {
+            cout << "Etes-vous sur de vouloir quitter ? [O/N] : ";
+            cin >> buffer;
+            cout << endl;
+            
+            //On tranforme la chaine en minuscule pour éviter de gérer encore plus de cas ("Yes", "YEs", "YES", "yes")
+            transform (buffer.begin(), buffer.end(), buffer.begin(), ::tolower);
+            
+            if (buffer == "o" || buffer == "oui" || buffer == "y" || buffer == "yes") {
+                quitter = true;
+            }
+        }
+    }
+}
 
 // Accesseurs des variables
 unsigned int GuiClass::getNbReponses() const
@@ -122,7 +381,7 @@ note GuiClass::getObjectif() const
 }
 Tirage GuiClass::typeTirage() const
 {
-    return _typeTirage;
+    return *_typeTirage;
 }
 unsigned int GuiClass::getCoefficient() const
 {
@@ -261,10 +520,10 @@ void GuiClass::setTirage()
     }
     
     if (typetirage == 1) {
-        _typeTirage = Tirage::Uniforme;
+        *_typeTirage = Tirage::Uniforme;
     }
     else {
-        _typeTirage = Tirage::Proportionel;
+        *_typeTirage = Tirage::Proportionel;
     }
     
     Clear();

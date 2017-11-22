@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "abstractnoteur.h"
+#include "guiclass.h"
 
 // Foncteur qui note les individus.
 // Il hérite de AbstractNoteur
@@ -14,6 +15,7 @@ class Noteur : public AbstractNoteur
     public:
         //Constructeurs
         Noteur();
+        Noteur (const GuiClass& gui);
         Noteur (double resultat, double coefficient = 1, bool debug = false);
         
         //Destructeur

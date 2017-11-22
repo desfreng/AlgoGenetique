@@ -7,24 +7,26 @@
 #include <limits>
 #include <string>
 #include <algorithm>
-
-//On définit une version 'portable' d'effacer la console
-#include <cstdlib>
-#if defined (WIN32)
-    #define Clear() system("cls")
-#elif defined (linux)
-    #define Clear() system("clear")
-#endif
+#include <thread>
+#include <cstdlib> // Pour system()
 
 #include "general.h"
+#include "abstractnoteur.h"
+
+class Population; // Je définit Temporairement la Classe Population pour l'utiliser
+//Elle sera remplacée lors de la compilation par la 'vraie'
 
 class GuiClass
 {
     public:
         GuiClass();
+        ~GuiClass();
         
-        void init();
-        void menu();
+        void configurer ();    //Menu de début (initialisation des paramètres
+        void menu();    //Menu Principal
+        
+        void setPopulation (Population *pop);
+        void setNoteur (AbstractNoteur *noteur);
         
         // Accesseurs des variables
         unsigned int getNbReponses() const;
@@ -37,25 +39,29 @@ class GuiClass
         bool debug() const;
         
     private:
-    
-        unsigned int _nbReponses;   //
-        unsigned int _nbIndividus;  //
-        double _fracSupr;           // Variables pour la population
-        double _fracMut;            //
-        note _objectif;             //
-        Tirage _typeTirage;         //
+        void pause();
         
-        unsigned int _coefficient ;  //
-        bool _debug;                // Variables pour le Noteur
+        unsigned int _nbReponses;       //
+        unsigned int _nbIndividus;      //
+        double _fracSupr;               // Variables pour la population
+        double _fracMut;                //
+        note _objectif;                 //
+        Tirage *_typeTirage;             //
         
-        void setIndividu();
-        void setReponses();
-        void setFracMut();
-        void setFracSupr();
-        void setObjectif();
-        void setTirage();
-        void setCoef();
-        void setDebug();
+        unsigned int _coefficient ;     //
+        bool _debug;                    // Variables pour le Noteur
+        
+        Population *_pop;               //
+        AbstractNoteur *_noteur;        // Pour accéder à leurs variables publiques et pour les afficher
+        
+        void setIndividu();             //
+        void setReponses();             //
+        void setFracMut();              //
+        void setFracSupr();             // Fonctions pour que l'utilisateur puisse modifier
+        void setObjectif();             // les paramètres via la console
+        void setTirage();               //
+        void setCoef();                 //
+        void setDebug();                //
 };
 
 std::ostream& operator<< (std::ostream& os, const GuiClass& gui);
