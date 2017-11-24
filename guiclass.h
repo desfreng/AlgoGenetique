@@ -40,6 +40,7 @@ class GuiClass
         
     private:
         void pause();
+        void clear();
         
         unsigned int _nbReponses;       //
         unsigned int _nbIndividus;      //
